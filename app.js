@@ -1,8 +1,11 @@
 const svg = document.getElementById('drawing');
 const status = document.getElementById('status');
+const modeButtons = document.querySelectorAll('.mode-btn');
 
 const svgNS = 'http://www.w3.org/2000/svg';
 const dataUrl = 'openjscad-project.json';
+let projectData = null;
+let activeView = '2d';
 
 function makeSvgNode(tag, attrs = {}) {
   const node = document.createElementNS(svgNS, tag);
@@ -10,9 +13,15 @@ function makeSvgNode(tag, attrs = {}) {
   return node;
 }
 
-function projectPoint(point) {
-  const x = point.x + 90;
-  const y = -point.y + 65;
+function projectPoint2D(point) {
+  const x = point.x * 5 + 170;
+  const y = -point.y * 5 + 420;
+  return { x, y };
+}
+
+function projectPoint3D(point, z = 0) {
+  const x = (point.x - point.y) * 3.8 + 470;
+  const y = (point.x + point.y) * 2.1 - z * 18 + 250;
   return { x, y };
 }
 
@@ -22,24 +31,27 @@ function buildPath(points) {
     .join(' ');
 }
 
-function drawShape(shape) {
+function drawShape(shape, view) {
   const group = makeSvgNode('g');
 
   if (!shape || !Array.isArray(shape.pts) || shape.pts.length === 0) {
     return group;
   }
 
-  const pts = shape.pts.map(projectPoint);
+  const points = view === '3d'
+    ? shape.pts.map((pt) => projectPoint3D(pt, Number(shape.z || 0)))
+    : shape.pts.map(projectPoint2D);
 
   if (shape.type === 'text') {
-    const anchor = pts[0] || { x: 0, y: 0 };
+    const anchor = points[0] || { x: 0, y: 0 };
     const text = makeSvgNode('text', {
       x: anchor.x,
       y: anchor.y,
       fill: shape.color || '#edf6ff',
-      'font-size': `${Math.max(10, (shape.size || 1) * 18)}px`,
+      'font-size': `${Math.max(16, (shape.size || 1) * 22)}px`,
       'text-anchor': 'start',
       'dominant-baseline': 'middle',
+      opacity: view === '3d' ? '0.9' : '1',
     });
     text.textContent = shape.text || '';
     group.appendChild(text);
@@ -47,13 +59,14 @@ function drawShape(shape) {
   }
 
   if (shape.type === 'line' || shape.type === 'dim' || shape.type === 'polyline') {
-    const d = buildPath(pts);
+    const d = buildPath(points);
     const path = makeSvgNode('path', {
       d,
       stroke: shape.color || '#7ee7ff',
       'stroke-width': `${shape.width || 1.5}`,
       class: shape.type === 'dim' ? 'shape-dim' : shape.type === 'polyline' ? 'shape-polyline' : 'shape-line',
       opacity: shape.type === 'dim' ? '0.9' : '1',
+      fill: 'none',
     });
     group.appendChild(path);
     return group;
@@ -62,34 +75,52 @@ function drawShape(shape) {
   return group;
 }
 
-function addBackgroundGrid(svgNode) {
-  const gridGroup = makeSvgNode('g', { opacity: '0.2' });
+function addBackgroundGrid(svgNode, view) {
+  const gridGroup = makeSvgNode('g', { opacity: view === '3d' ? '0.15' : '0.2' });
 
-  for (let x = -80; x <= 70; x += 10) {
+  for (let x = 0; x <= 1000; x += 25) {
     const line = makeSvgNode('line', {
       x1: x,
-      y1: -30,
+      y1: 0,
       x2: x,
-      y2: 70,
+      y2: 620,
       stroke: '#8aa8c6',
-      'stroke-width': '0.45',
+      'stroke-width': '0.6',
     });
     gridGroup.appendChild(line);
   }
 
-  for (let y = -30; y <= 70; y += 10) {
+  for (let y = 0; y <= 620; y += 25) {
     const line = makeSvgNode('line', {
-      x1: -80,
+      x1: 0,
       y1: y,
-      x2: 70,
+      x2: 960,
       y2: y,
       stroke: '#8aa8c6',
-      'stroke-width': '0.45',
+      'stroke-width': '0.6',
     });
     gridGroup.appendChild(line);
   }
 
   svgNode.appendChild(gridGroup);
+}
+
+function renderDrawing() {
+  if (!projectData) return;
+
+  const map = projectData.maps && projectData.maps[0];
+  const shapes = map && Array.isArray(map.shapes) ? map.shapes : [];
+
+  svg.innerHTML = '';
+  addBackgroundGrid(svg, activeView);
+
+  const root = makeSvgNode('g');
+  shapes.forEach((shape) => {
+    root.appendChild(drawShape(shape, activeView));
+  });
+
+  svg.appendChild(root);
+  status.textContent = `${shapes.length} shapes rendered`;
 }
 
 async function loadDrawing() {
@@ -101,23 +132,8 @@ async function loadDrawing() {
       throw new Error(`HTTP ${response.status}`);
     }
 
-    const project = await response.json();
-    const map = project.maps && project.maps[0];
-    const shapes = map && Array.isArray(map.shapes) ? map.shapes : [];
-
-    svg.innerHTML = '';
-    addBackgroundGrid(svg);
-
-    const root = makeSvgNode('g', {
-      transform: 'translate(25 0)',
-    });
-
-    shapes.forEach((shape) => {
-      root.appendChild(drawShape(shape));
-    });
-
-    svg.appendChild(root);
-    status.textContent = `${shapes.length} shapes rendered`;
+    projectData = await response.json();
+    renderDrawing();
   } catch (error) {
     console.error(error);
     status.textContent = 'Unable to load drawing';
@@ -134,5 +150,13 @@ async function loadDrawing() {
     svg.appendChild(fallback);
   }
 }
+
+modeButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    activeView = button.dataset.view;
+    modeButtons.forEach((btn) => btn.classList.toggle('active', btn === button));
+    renderDrawing();
+  });
+});
 
 loadDrawing();

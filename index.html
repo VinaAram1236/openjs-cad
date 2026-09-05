@@ -72,12 +72,19 @@
                 <p class="panel-label">Live project</p>
                 <h3>1st floor</h3>
               </div>
+              <div class="view-controls" aria-label="Layout view controls">
+                <button class="mode-btn active" type="button" data-view="2d">2D</button>
+                <button class="mode-btn" type="button" data-view="3d">3D</button>
+              </div>
+            </div>
+
+            <div class="status-row">
               <span id="status">Loading drawing…</span>
             </div>
 
             <svg
               id="drawing"
-              viewBox="-20 -20 220 140"
+              viewBox="0 0 960 620"
               preserveAspectRatio="xMidYMid meet"
               aria-label="OpenJS CAD design preview"
               role="img"
