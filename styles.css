@@ -212,11 +212,17 @@ h1 {
 
 .hero-panel {
   position: relative;
+  min-height: 700px;
   background: linear-gradient(180deg, rgba(13, 23, 38, 0.92), rgba(7, 17, 29, 0.96));
   border: 1px solid var(--panel-border);
   border-radius: 26px;
   box-shadow: 0 28px 60px var(--shadow);
   overflow: hidden;
+}
+
+.hero-panel:fullscreen {
+  border-radius: 0;
+  background: #07111d;
 }
 
 .panel-head {
@@ -231,6 +237,34 @@ h1 {
   font-size: 1.15rem;
 }
 
+.viewer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-btn,
+.mode-btn {
+  border: 0;
+  cursor: pointer;
+  font-weight: 700;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.nav-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(148, 163, 184, 0.08);
+  color: var(--text);
+  border: 1px solid var(--panel-border);
+}
+
+.nav-btn:hover,
+.mode-btn:hover {
+  transform: translateY(-1px);
+}
+
 .view-controls {
   display: inline-flex;
   gap: 8px;
@@ -241,13 +275,10 @@ h1 {
 }
 
 .mode-btn {
-  border: 0;
   background: transparent;
   color: var(--muted);
   padding: 0.5rem 0.8rem;
   border-radius: 999px;
-  font-weight: 700;
-  cursor: pointer;
 }
 
 .mode-btn.active {
@@ -266,7 +297,8 @@ h1 {
 
 #drawing {
   width: 100%;
-  min-height: 620px;
+  min-height: 780px;
+  display: block;
   background:
     linear-gradient(rgba(15, 29, 44, 0.78), rgba(13, 22, 34, 0.96)),
     radial-gradient(circle at center, rgba(126, 231, 255, 0.08), transparent 58%);

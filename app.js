@@ -1,11 +1,16 @@
 const svg = document.getElementById('drawing');
 const status = document.getElementById('status');
 const modeButtons = document.querySelectorAll('.mode-btn');
+const prevMapBtn = document.getElementById('prev-map');
+const nextMapBtn = document.getElementById('next-map');
+const fullscreenBtn = document.getElementById('fullscreen-btn');
+const mapNameEl = document.getElementById('map-name');
 
 const svgNS = 'http://www.w3.org/2000/svg';
 const dataUrl = 'openjscad-project.json';
 let projectData = null;
 let activeView = '2d';
+let activeMapIndex = 0;
 
 function makeSvgNode(tag, attrs = {}) {
   const node = document.createElementNS(svgNS, tag);
@@ -14,14 +19,14 @@ function makeSvgNode(tag, attrs = {}) {
 }
 
 function projectPoint2D(point) {
-  const x = point.x * 5.8 + 280;
-  const y = -point.y * 5.8 + 390;
+  const x = point.x * 6.4 + 350;
+  const y = -point.y * 6.4 + 520;
   return { x, y };
 }
 
 function projectPoint3D(point, z = 0) {
-  const x = (point.x - point.y) * 4.5 + 620;
-  const y = (point.x + point.y) * 2.4 - z * 18 + 240;
+  const x = (point.x - point.y) * 5 + 720;
+  const y = (point.x + point.y) * 2.8 - z * 18 + 260;
   return { x, y };
 }
 
@@ -48,7 +53,7 @@ function drawShape(shape, view) {
       x: anchor.x,
       y: anchor.y,
       fill: shape.color || '#edf6ff',
-      'font-size': `${Math.max(16, (shape.size || 1) * 22)}px`,
+      'font-size': `${Math.max(16, (shape.size || 1) * 26)}px`,
       'text-anchor': 'start',
       'dominant-baseline': 'middle',
       opacity: view === '3d' ? '0.9' : '1',
@@ -76,25 +81,25 @@ function drawShape(shape, view) {
 }
 
 function addBackgroundGrid(svgNode, view) {
-  const gridGroup = makeSvgNode('g', { opacity: view === '3d' ? '0.15' : '0.2' });
+  const gridGroup = makeSvgNode('g', { opacity: view === '3d' ? '0.12' : '0.22' });
 
-  for (let x = 0; x <= 1000; x += 25) {
+  for (let x = 0; x <= 1400; x += 25) {
     const line = makeSvgNode('line', {
       x1: x,
       y1: 0,
       x2: x,
-      y2: 620,
+      y2: 840,
       stroke: '#8aa8c6',
       'stroke-width': '0.6',
     });
     gridGroup.appendChild(line);
   }
 
-  for (let y = 0; y <= 620; y += 25) {
+  for (let y = 0; y <= 840; y += 25) {
     const line = makeSvgNode('line', {
       x1: 0,
       y1: y,
-      x2: 960,
+      x2: 1400,
       y2: y,
       stroke: '#8aa8c6',
       'stroke-width': '0.6',
@@ -106,10 +111,14 @@ function addBackgroundGrid(svgNode, view) {
 }
 
 function renderDrawing() {
-  if (!projectData) return;
+  if (!projectData || !projectData.maps || projectData.maps.length === 0) return;
 
-  const map = projectData.maps && projectData.maps[0];
+  const map = projectData.maps[activeMapIndex];
   const shapes = map && Array.isArray(map.shapes) ? map.shapes : [];
+
+  if (mapNameEl) {
+    mapNameEl.textContent = map && map.name ? map.name : 'Floor';
+  }
 
   svg.innerHTML = '';
   addBackgroundGrid(svg, activeView);
@@ -120,7 +129,21 @@ function renderDrawing() {
   });
 
   svg.appendChild(root);
-  status.textContent = `${shapes.length} shapes rendered`;
+  status.textContent = `${activeMapIndex + 1} / ${projectData.maps.length} • ${map && map.name ? map.name : 'Floor'} • ${shapes.length} shapes`;
+}
+
+function changeMap(delta) {
+  if (!projectData || !projectData.maps || projectData.maps.length === 0) return;
+  activeMapIndex = (activeMapIndex + delta + projectData.maps.length) % projectData.maps.length;
+  renderDrawing();
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen?.();
+  } else {
+    document.exitFullscreen?.();
+  }
 }
 
 async function loadDrawing() {
@@ -158,5 +181,9 @@ modeButtons.forEach((button) => {
     renderDrawing();
   });
 });
+
+prevMapBtn?.addEventListener('click', () => changeMap(-1));
+nextMapBtn?.addEventListener('click', () => changeMap(1));
+fullscreenBtn?.addEventListener('click', toggleFullscreen);
 
 loadDrawing();

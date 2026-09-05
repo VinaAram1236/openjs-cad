@@ -70,11 +70,17 @@
             <div class="panel-head">
               <div>
                 <p class="panel-label">Live project</p>
-                <h3>1st floor</h3>
+                <h3 id="map-name">1st floor</h3>
               </div>
-              <div class="view-controls" aria-label="Layout view controls">
-                <button class="mode-btn active" type="button" data-view="2d">2D</button>
-                <button class="mode-btn" type="button" data-view="3d">3D</button>
+
+              <div class="viewer-actions">
+                <button class="nav-btn" type="button" id="prev-map" aria-label="Previous floor">←</button>
+                <button class="nav-btn" type="button" id="next-map" aria-label="Next floor">→</button>
+                <button class="nav-btn" type="button" id="fullscreen-btn" aria-label="Toggle fullscreen">⛶</button>
+                <div class="view-controls" aria-label="Layout view controls">
+                  <button class="mode-btn active" type="button" data-view="2d">2D</button>
+                  <button class="mode-btn" type="button" data-view="3d">3D</button>
+                </div>
               </div>
             </div>
 
@@ -84,7 +90,7 @@
 
             <svg
               id="drawing"
-              viewBox="0 0 960 620"
+              viewBox="0 0 1400 840"
               preserveAspectRatio="xMidYMid meet"
               aria-label="OpenJS CAD design preview"
               role="img"
