@@ -146,6 +146,12 @@ function toggleFullscreen() {
   }
 }
 
+function setView(view) {
+  activeView = view;
+  modeButtons.forEach((button) => button.classList.toggle('active', button.dataset.view === view));
+  renderDrawing();
+}
+
 async function loadDrawing() {
   try {
     status.textContent = 'Loading drawing…';
@@ -176,9 +182,7 @@ async function loadDrawing() {
 
 modeButtons.forEach((button) => {
   button.addEventListener('click', () => {
-    activeView = button.dataset.view;
-    modeButtons.forEach((btn) => btn.classList.toggle('active', btn === button));
-    renderDrawing();
+    setView(button.dataset.view);
   });
 });
 

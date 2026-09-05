@@ -74,12 +74,12 @@
               </div>
 
               <div class="viewer-actions">
-                <button class="nav-btn" type="button" id="prev-map" aria-label="Previous floor">←</button>
-                <button class="nav-btn" type="button" id="next-map" aria-label="Next floor">→</button>
-                <button class="nav-btn" type="button" id="fullscreen-btn" aria-label="Toggle fullscreen">⛶</button>
+                <button class="nav-btn" type="button" id="prev-map" aria-label="Previous floor" onclick="changeMap(-1)">←</button>
+                <button class="nav-btn" type="button" id="next-map" aria-label="Next floor" onclick="changeMap(1)">→</button>
+                <button class="nav-btn" type="button" id="fullscreen-btn" aria-label="Toggle fullscreen" onclick="toggleFullscreen()">⛶</button>
                 <div class="view-controls" aria-label="Layout view controls">
-                  <button class="mode-btn active" type="button" data-view="2d">2D</button>
-                  <button class="mode-btn" type="button" data-view="3d">3D</button>
+                  <button class="mode-btn active" type="button" data-view="2d" onclick="setView('2d')">2D</button>
+                  <button class="mode-btn" type="button" data-view="3d" onclick="setView('3d')">3D</button>
                 </div>
               </div>
             </div>
