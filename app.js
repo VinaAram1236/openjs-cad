@@ -11,11 +11,9 @@ function makeSvgNode(tag, attrs = {}) {
 }
 
 function projectPoint(point) {
-  const scale = 6.8;
-  return {
-    x: point.x * scale,
-    y: -point.y * scale,
-  };
+  const x = point.x + 90;
+  const y = -point.y + 65;
+  return { x, y };
 }
 
 function buildPath(points) {
