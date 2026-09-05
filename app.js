@@ -186,4 +186,21 @@ prevMapBtn?.addEventListener('click', () => changeMap(-1));
 nextMapBtn?.addEventListener('click', () => changeMap(1));
 fullscreenBtn?.addEventListener('click', toggleFullscreen);
 
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    changeMap(-1);
+  }
+
+  if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    changeMap(1);
+  }
+
+  if (event.key.toLowerCase() === 'f') {
+    event.preventDefault();
+    toggleFullscreen();
+  }
+});
+
 loadDrawing();

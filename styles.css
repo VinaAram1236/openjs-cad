@@ -226,6 +226,9 @@ h1 {
 }
 
 .panel-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -383,6 +386,21 @@ svg .shape-dim {
     width: 100%;
     justify-content: space-between;
     flex-wrap: wrap;
+  }
+
+  .panel-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .viewer-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  #drawing {
+    min-height: 560px;
   }
 
   .stat-grid {
