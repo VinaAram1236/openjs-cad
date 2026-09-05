@@ -11,67 +11,87 @@ function makeSvgNode(tag, attrs = {}) {
 }
 
 function projectPoint(point) {
-  const scale = 8;
+  const scale = 6.8;
   return {
     x: point.x * scale,
     y: -point.y * scale,
   };
 }
 
+function buildPath(points) {
+  return points
+    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
+    .join(' ');
+}
+
 function drawShape(shape) {
   const group = makeSvgNode('g');
 
+  if (!shape || !Array.isArray(shape.pts) || shape.pts.length === 0) {
+    return group;
+  }
+
+  const pts = shape.pts.map(projectPoint);
+
   if (shape.type === 'text') {
-    const p = projectPoint(shape.pts[0]);
+    const anchor = pts[0] || { x: 0, y: 0 };
     const text = makeSvgNode('text', {
-      x: p.x,
-      y: p.y,
-      fill: shape.color || '#ffffff',
-      'font-size': `${shape.size || 1}rem`,
+      x: anchor.x,
+      y: anchor.y,
+      fill: shape.color || '#edf6ff',
+      'font-size': `${Math.max(10, (shape.size || 1) * 18)}px`,
       'text-anchor': 'start',
+      'dominant-baseline': 'middle',
     });
     text.textContent = shape.text || '';
     group.appendChild(text);
     return group;
   }
 
-  if (!shape.pts || shape.pts.length === 0) {
-    return group;
-  }
-
-  const pts = shape.pts.map(projectPoint);
-
-  if (shape.type === 'line' || shape.type === 'dim') {
-    const d = [
-      `M ${pts[0].x} ${pts[0].y}`,
-      `L ${pts[1].x} ${pts[1].y}`,
-    ].join(' ');
+  if (shape.type === 'line' || shape.type === 'dim' || shape.type === 'polyline') {
+    const d = buildPath(pts);
     const path = makeSvgNode('path', {
       d,
-      stroke: shape.color || '#4fc3f7',
+      stroke: shape.color || '#7ee7ff',
       'stroke-width': `${shape.width || 1.5}`,
-      class: shape.type === 'dim' ? 'shape-dim' : 'shape-line',
-    });
-    group.appendChild(path);
-    return group;
-  }
-
-  if (shape.type === 'polyline') {
-    const d = pts
-      .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
-      .join(' ');
-
-    const path = makeSvgNode('path', {
-      d,
-      stroke: shape.color || '#4fc3f7',
-      'stroke-width': `${shape.width || 1.5}`,
-      class: 'shape-line',
+      class: shape.type === 'dim' ? 'shape-dim' : shape.type === 'polyline' ? 'shape-polyline' : 'shape-line',
+      opacity: shape.type === 'dim' ? '0.9' : '1',
     });
     group.appendChild(path);
     return group;
   }
 
   return group;
+}
+
+function addBackgroundGrid(svgNode) {
+  const gridGroup = makeSvgNode('g', { opacity: '0.2' });
+
+  for (let x = -80; x <= 70; x += 10) {
+    const line = makeSvgNode('line', {
+      x1: x,
+      y1: -30,
+      x2: x,
+      y2: 70,
+      stroke: '#8aa8c6',
+      'stroke-width': '0.45',
+    });
+    gridGroup.appendChild(line);
+  }
+
+  for (let y = -30; y <= 70; y += 10) {
+    const line = makeSvgNode('line', {
+      x1: -80,
+      y1: y,
+      x2: 70,
+      y2: y,
+      stroke: '#8aa8c6',
+      'stroke-width': '0.45',
+    });
+    gridGroup.appendChild(line);
+  }
+
+  svgNode.appendChild(gridGroup);
 }
 
 async function loadDrawing() {
@@ -85,12 +105,13 @@ async function loadDrawing() {
 
     const project = await response.json();
     const map = project.maps && project.maps[0];
-    const shapes = map && map.shapes ? map.shapes : [];
+    const shapes = map && Array.isArray(map.shapes) ? map.shapes : [];
 
     svg.innerHTML = '';
+    addBackgroundGrid(svg);
 
     const root = makeSvgNode('g', {
-      transform: 'translate(60 30)',
+      transform: 'translate(25 0)',
     });
 
     shapes.forEach((shape) => {

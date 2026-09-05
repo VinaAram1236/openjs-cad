@@ -3,39 +3,107 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OpenJS CAD</title>
+    <title>OpenJS CAD | Interactive Design</title>
     <meta
       name="description"
-      content="OpenJS CAD project rendered as a GitHub Pages site."
+      content="OpenJS CAD interactive floor plan and design preview published on GitHub Pages."
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="page-shell">
+    <div class="site-shell">
       <header class="topbar">
-        <div>
-          <p class="eyebrow">GitHub Pages</p>
-          <h1>OpenJS CAD</h1>
+        <div class="brand-wrap">
+          <div class="brand-mark">O</div>
+          <div>
+            <p class="eyebrow">GitHub Pages</p>
+            <h1>OpenJS CAD</h1>
+          </div>
         </div>
-        <a class="button" href="openjscad-project.json" target="_blank" rel="noreferrer">
-          Open JSON
-        </a>
+
+        <nav class="nav-actions" aria-label="Main navigation">
+          <a href="#preview">Preview</a>
+          <a href="#features">Features</a>
+          <a class="button button-primary" href="openjscad-project.json" target="_blank" rel="noreferrer">Open JSON</a>
+        </nav>
       </header>
 
-      <main class="viewer-wrap">
-        <div class="card">
-          <div class="card-header">
-            <h2>Design Preview</h2>
-            <span id="status">Loading drawing…</span>
+      <main>
+        <section class="hero">
+          <div class="hero-copy">
+            <span class="pill">Interactive architectural concept</span>
+            <h2>Modern floor plan design, ready for the web.</h2>
+            <p>
+              This project transforms a CAD drawing into a clean, interactive browser experience,
+              published as a live GitHub Pages project.
+            </p>
+
+            <div class="cta-row">
+              <a class="button button-primary" href="#preview">View design</a>
+              <a class="button button-secondary" href="https://github.com/VinaAram1236/openjs-cad" target="_blank" rel="noreferrer">GitHub repo</a>
+            </div>
+
+            <ul class="stat-grid" aria-label="Project stats">
+              <li>
+                <strong>183</strong>
+                <span>Shapes</span>
+              </li>
+              <li>
+                <strong>2D</strong>
+                <span>Layout</span>
+              </li>
+              <li>
+                <strong>1</strong>
+                <span>Floor</span>
+              </li>
+              <li>
+                <strong>Live</strong>
+                <span>GitHub Pages</span>
+              </li>
+            </ul>
           </div>
-          <svg
-            id="drawing"
-            viewBox="-70 -20 180 100"
-            preserveAspectRatio="xMidYMid meet"
-            aria-label="OpenJS CAD drawing preview"
-            role="img"
-          ></svg>
-        </div>
+
+          <div class="hero-panel" id="preview">
+            <div class="panel-head">
+              <div>
+                <p class="panel-label">Live project</p>
+                <h3>1st floor</h3>
+              </div>
+              <span id="status">Loading drawing…</span>
+            </div>
+
+            <svg
+              id="drawing"
+              viewBox="-70 -20 180 100"
+              preserveAspectRatio="xMidYMid meet"
+              aria-label="OpenJS CAD design preview"
+              role="img"
+            ></svg>
+          </div>
+        </section>
+
+        <section class="feature-grid" id="features">
+          <article class="feature-card">
+            <div class="icon">01</div>
+            <h3>Clean CAD rendering</h3>
+            <p>Room outlines, labels, and dimension markers are translated into a readable web preview.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="icon">02</div>
+            <h3>Static site hosting</h3>
+            <p>Built as a lightweight GitHub Pages site with no framework or build step required.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="icon">03</div>
+            <h3>Fast and portable</h3>
+            <p>Easy to share, easy to edit, and designed to stay lightweight while remaining visually polished.</p>
+          </article>
+        </section>
       </main>
     </div>
 
