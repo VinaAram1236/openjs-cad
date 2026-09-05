@@ -2,7 +2,7 @@ const svg = document.getElementById('drawing');
 const status = document.getElementById('status');
 
 const svgNS = 'http://www.w3.org/2000/svg';
-const dataUrl = 'openjscad-project%20(2).json';
+const dataUrl = 'openjscad-project.json';
 
 function makeSvgNode(tag, attrs = {}) {
   const node = document.createElementNS(svgNS, tag);
