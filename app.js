@@ -14,14 +14,14 @@ function makeSvgNode(tag, attrs = {}) {
 }
 
 function projectPoint2D(point) {
-  const x = point.x * 5 + 260;
-  const y = -point.y * 5 + 380;
+  const x = point.x * 5.8 + 280;
+  const y = -point.y * 5.8 + 390;
   return { x, y };
 }
 
 function projectPoint3D(point, z = 0) {
-  const x = (point.x - point.y) * 3.8 + 560;
-  const y = (point.x + point.y) * 2.1 - z * 18 + 220;
+  const x = (point.x - point.y) * 4.5 + 620;
+  const y = (point.x + point.y) * 2.4 - z * 18 + 240;
   return { x, y };
 }
 
